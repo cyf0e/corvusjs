@@ -1,0 +1,28 @@
+export const corvusSupportedLanguages = [
+  "hr",
+  "en",
+  "it",
+  "de",
+  "sr",
+  "sl",
+] as const;
+export const corvusSupportedCurriencies = [
+  "GBP",
+  "USD",
+  "EUR",
+  "DKK",
+  "NOK",
+  "SEK",
+  "CHF",
+  "CAD",
+  "HUF",
+  "BHD",
+  "AUD",
+  "RUB",
+  "PLN",
+  "RON",
+  "CZK",
+  "ISK",
+  "BAM",
+  "RSD",
+] as const;

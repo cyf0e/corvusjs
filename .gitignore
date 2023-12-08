@@ -1,0 +1,6 @@
+/**/node_modules
+/**/dist
+
+#random root folder  files
+example_response.*
+test.*

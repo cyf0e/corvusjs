@@ -1,0 +1,16 @@
+{
+  "name": "@corvusjs/core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "files": "./dist",
+  "scripts": {
+    "build": "rimraf ./dist && npx tsc"
+  },
+  "author": "cyf0e",
+  "license": "MIT",
+  "dependencies": {
+    "js-sha256": "^0.10.1",
+    "typescript": "^5.2.2"
+  }
+}
