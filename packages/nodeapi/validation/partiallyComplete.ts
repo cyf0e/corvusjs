@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { corvusSupportedCurriencies } from "@corvusjs/core";
+import { corvusSupportedCurriencies } from "@cyf0e/corvusjs-core";
 import { mandatoryOptions, mandatoryOptionsPayload } from "./mandatory";
 import { APIPartiallyCompleteTransaction } from "../types/base";
 import { APIPartiallyCompleteTransactionPayload } from "../types/payload";

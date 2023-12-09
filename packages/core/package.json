@@ -1,7 +1,12 @@
 {
-  "name": "@corvusjs/core",
+  "name": "@cyf0e/corvusjs-core",
   "version": "1.0.0",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cyf0e/corvusjs.git",
+    "directory": "packages/core"
+  },
   "main": "./dist/index.js",
   "files": "./dist",
   "scripts": {
@@ -9,8 +14,10 @@
   },
   "author": "cyf0e",
   "license": "MIT",
-  "dependencies": {
-    "js-sha256": "^0.10.1",
+  "devDependencies": {
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "js-sha256": "^0.10.1"
   }
 }

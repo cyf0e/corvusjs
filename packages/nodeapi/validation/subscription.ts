@@ -10,7 +10,7 @@ import {
   APISubscriptionTransactionPayload,
 } from "../types/payload";
 import { validateData } from "./util";
-import { corvusSupportedCurriencies } from "@corvusjs/core";
+import { corvusSupportedCurriencies } from "@cyf0e/corvusjs-core";
 import { versionZodDefinition } from "./partiallyComplete";
 
 const subscriptionTransactionFields = z.object({

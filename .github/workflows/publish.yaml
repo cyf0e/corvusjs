@@ -16,8 +16,8 @@ jobs:
           node-version: "20.x"
           registry-url: "https://npm.pkg.github.com"
           # Defaults to the user or organization that owns the workflow file
-          scope: "@cyf0e"
       - run: npm install
+      - run: npm run build --workspace=packages
       - run: npm run test --worspace=packages/nodeapi
       - run: npm publish --workspace=packages
         env:

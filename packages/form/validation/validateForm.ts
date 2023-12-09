@@ -3,7 +3,7 @@ import {
   corvusSupportedCurriencies,
   corvusSupportedLanguages,
   countryCodes,
-} from "@corvusjs/core";
+} from "@cyf0e/corvusjs-core";
 import {
   FormServiceBestBefore,
   FormServiceCardDiscount,

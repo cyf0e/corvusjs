@@ -1,7 +1,7 @@
 import {
   corvusSupportedCurriencies,
   corvusSupportedLanguages,
-} from "@corvusjs/core";
+} from "@cyf0e/corvusjs-core";
 
 export type CorvusSupportedCurriencies =
   (typeof corvusSupportedCurriencies)[number];

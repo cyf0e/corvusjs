@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import https from "node:https";
-import { CorvusBase } from "@corvusjs/core";
+import { CorvusBase } from "@cyf0e/corvusjs-core";
 import { readFileSync, writeFileSync } from "node:fs";
 import { hashV2, hashV1, hashV3 } from "./utils/hashFunctions";
 import {

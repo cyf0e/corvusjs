@@ -1,4 +1,4 @@
-import { CorvusBase } from "@corvusjs/core";
+import { CorvusBase } from "@cyf0e/corvusjs-core";
 import {
   FormServicePayload,
   validateBestBefore,
