@@ -1,1 +1,2 @@
-export * from "./CorvusAPI.js";
+export * from "./CorvusAPI";
+export * from "./types/types";
