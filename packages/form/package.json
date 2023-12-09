@@ -4,7 +4,9 @@
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
-  "files": "./dist",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/cyf0e/corvusjs.git",
