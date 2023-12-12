@@ -68,7 +68,7 @@ function corvusPublicSign(params: {
     public signMessage<T extends Record<string, string | number>>(
       options: T
     ): T & { signature: string } {
-      return super.signMessage(options);
+      return super.signSHA256(options);
     }
   }
   return new CorvusWithPublicSign({

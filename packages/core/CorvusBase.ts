@@ -16,7 +16,7 @@ export class CorvusBase {
     this.storeId = options.storeId;
     this.version = options.version;
   }
-  public signMessage<T extends Record<string, string | number>>(options: T) {
+  protected signSHA256<T extends Record<string, string | number>>(options: T) {
     if (!this.secretKey)
       throw new Error("Secret key is required to sing transactions.");
     const sortedMessage = this.generateSortedMessageFromOptions(options);
@@ -41,20 +41,14 @@ export class CorvusBase {
     T extends Record<string, string | number>
   >(options: T) {
     const sortedKeys = [...Object.keys(options)].sort();
-    const iOptions = options as { [index: string]: any };
     let sortedMessage = "";
     for (let key of sortedKeys) {
       let value = options[key];
-      let valueString = value.toString();
-
-      if (
-        typeof value == "number" &&
-        (key.toLowerCase() == "amount" ||
-          key.toLowerCase() == "discount_amount")
-      ) {
-        valueString = value.toString();
-      }
-      sortedMessage = sortedMessage.concat(key, valueString);
+      if (value == undefined || value == null) continue;
+      sortedMessage = sortedMessage.concat(
+        key,
+        typeof value == "number" ? value.toString() : value
+      );
     }
     return sortedMessage;
   }

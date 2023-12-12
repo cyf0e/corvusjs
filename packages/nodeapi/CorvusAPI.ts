@@ -328,7 +328,7 @@ export class CorvusAPI extends CorvusBase {
   ) {
     //patch in storeid and version
     const withDefaults = this.addStoreIdAndVersion(transaction);
-    const signed = this.signMessage(withDefaults);
+    const signed = this.signSHA256(withDefaults);
     const res = await this.makeHTTPSRequest(
       {
         path: "/check_pis_status",

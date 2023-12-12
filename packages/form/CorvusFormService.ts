@@ -112,7 +112,7 @@ export class CorvusFormService extends CorvusBase {
   }
 
   /*
-   * Returns current request options wihtout clearing Form.currentRequestOptions
+   * Returns current request options wihtout clearing the builder
    * @returns Current request options
    */
   data() {
@@ -120,10 +120,13 @@ export class CorvusFormService extends CorvusBase {
   }
 
   /*
-   * Returns current request options and clears Form.currentRequestOptions
+   * Signs (if message doesnt already have a signature field) and returns current request options and clears the current form builder.
    * @returns Current request options
    */
   consume() {
+    if (this.currentRequestOptions && !this.currentRequestOptions.signature) {
+      this.sign();
+    }
     const req = this.currentRequestOptions;
     this.currentRequestOptions = undefined;
     return req;
@@ -133,7 +136,7 @@ export class CorvusFormService extends CorvusBase {
     if (!this.currentRequestOptions) {
       throw new Error("Error signing empty request.");
     }
-    const signedMessage = this.signMessage(this.currentRequestOptions);
+    const signedMessage = this.signSHA256(this.currentRequestOptions);
     this.validateAndAppendToReqOptions((message) => {
       if (typeof message.signature != "string") {
         throw new Error(`Signature must be of type string. Got ${message}`);
