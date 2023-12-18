@@ -1,6 +1,6 @@
 {
   "name": "@cyf0e/corvusjs-nodeapi",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "./dist/index.js",
   "files": [
@@ -19,7 +19,7 @@
   "author": "cyf0e",
   "license": "MIT",
   "dependencies": {
-    "@cyf0e/corvusjs-core": "^1.0.0",
+    "@cyf0e/corvusjs-core": "^1.0.2",
     "date-fns": "^2.30.0",
     "fast-xml-parser": "^4.3.2",
     "js-sha256": "^0.9.0",
