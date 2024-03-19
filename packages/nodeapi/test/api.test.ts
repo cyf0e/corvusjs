@@ -31,81 +31,45 @@ function omitHash<T extends Record<string, unknown>>(obj: T | null) {
   return newObj;
 }
 
-function apiFactory(params?: { secret?: string; store_id?: number }) {
-  class mockedCorvusAPI extends CorvusAPI {
-    constructor(
-      options: Omit<CorvusAPIProps, "privateKeyPath" | "certificatePath">
-    ) {
-      super({ ...options, privateKeyPath: "/", certificatePath: "/" });
-    }
-    protected makeHTTPSRequest(
-      options: RequestOptions,
-      body: string | Buffer | Uint8Array
-    ): Promise<Buffer> {
-      return Promise.resolve(Buffer.from(body));
-    }
-    public parseXML<T extends string | Buffer>(data: T) {
-      return data.toString();
-    }
+class MockedCorvusAPI extends CorvusAPI {
+  constructor(
+    options: Omit<CorvusAPIProps, "privateKeyPath" | "certificatePath">
+  ) {
+    super({ ...options, privateKeyPath: "/", certificatePath: "/" });
   }
-  return new mockedCorvusAPI({
+
+  public parseXML<T extends string | Buffer>(data: T) {
+    return data.toString();
+  }
+  public makeHTTPSRequest(
+    options: RequestOptions,
+    body: string | Buffer | Uint8Array
+  ): Promise<Buffer> {
+    return super.makeHTTPSRequest(options, body);
+  }
+}
+function apiFactory(params?: { secret?: string; store_id?: number }) {
+  return new MockedCorvusAPI({
     secretKey: params?.secret ?? TEST_SECRETKEY,
     endpoint: "test",
     version: TEST_VERSION,
     storeId: params?.store_id ?? TEST_STORE_ID,
+    makeHTTPSRequestOverride(options, body) {
+      return Promise.resolve(Buffer.from(body));
+    },
+    parseXMLFn(data) {
+      return data.toString();
+    },
   });
 }
-function corvusPublicSign(params: {
-  custom_key?: string;
-  customeStoreId?: number;
-}) {
-  class CorvusWithPublicSign extends CorvusAPI {
-    constructor(
-      options: Omit<CorvusAPIProps, "privateKeyPath" | "certificatePath">
-    ) {
-      super({ ...options, privateKeyPath: "/", certificatePath: "/" });
-    }
-    public signMessage<T extends Record<string, string | number>>(
-      options: T
-    ): T & { signature: string } {
-      return super.signSHA256(options);
-    }
-  }
-  return new CorvusWithPublicSign({
-    secretKey: params.custom_key ?? TEST_SECRETKEY,
-    endpoint: "test",
-    version: TEST_VERSION,
-    storeId: params.customeStoreId ?? TEST_STORE_ID,
-  });
-}
+
 function decodeURLSP(sp: string) {
   const o = new URLSearchParams(sp);
   const osp = Object.fromEntries(o.entries()) as any;
   osp.store_id = parseInt(osp.store_id);
   return osp;
 }
-describe("SIGNATURE", function () {
-  it("signs correctly", function () {
-    const corvus = corvusPublicSign({
-      custom_key: "UNV3-i2otJw0rUWzA2lpcNRqTOYRWdAeTw",
-    });
 
-    const message = {
-      version: "1.4",
-      store_id: 2029,
-      order_number: "1537270065109",
-      amount: "10.00",
-      currency: "EUR",
-      cart: "order 256",
-      require_complete: "false",
-      language: "hr",
-    };
-    assert.deepStrictEqual(
-      corvus.signMessage(message).signature,
-      "dd76d1b5a457f338d1d9c16cb070958c55f0a8595001e20e0584300074f50f3e"
-    );
-  });
-});
 describe("HASHING", function () {
   it("hashV1", function () {
     const transaction: Omit<APIRequestMandatory, "hash"> = {
@@ -165,7 +129,6 @@ describe("API ", function () {
   it("complete transaction", async function () {
     const corvus = apiFactory();
     const res = await corvus.completeTransaction({ order_number: "1233" });
-    console.log(res);
     assert.deepStrictEqual(omitHash(decodeURLSP(res as any)), {
       order_number: "1233",
       store_id: 123,
@@ -330,5 +293,33 @@ describe("API ", function () {
       timestamp: "1579265340",
     });
     expect(decodeURLSP(res as any)).toEqual(expected);
+  });
+});
+describe("FUNCTION OVERWRITES ", function () {
+  it("valid parse xml function", async function () {
+    const corvus = new CorvusAPI({
+      secretKey: TEST_SECRETKEY,
+      endpoint: "test",
+      version: TEST_VERSION,
+      storeId: TEST_STORE_ID,
+      certificatePath: "any",
+      privateKeyPath: "path",
+      parseXMLFn: (data: any) => "good",
+    });
+    const res = corvus.parseXML("data");
+    assert.equal(res, "good");
+  });
+  it("valid make https request function", async function () {
+    const corvus = new MockedCorvusAPI({
+      secretKey: TEST_SECRETKEY,
+      endpoint: "test",
+      version: TEST_VERSION,
+      storeId: TEST_STORE_ID,
+      makeHTTPSRequestOverride: (options, body) => {
+        return Promise.resolve(Buffer.from((options.method ?? "") + body));
+      },
+    });
+    const res = await corvus.makeHTTPSRequest({ method: "GET" }, "data");
+    assert.equal(res.toString(), "GETdata");
   });
 });

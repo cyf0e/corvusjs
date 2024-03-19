@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import https from "node:https";
 import { CorvusBase } from "@cyf0e/corvusjs-core";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { hashV2, hashV1, hashV3 } from "./utils/hashFunctions";
 import {
   APICheckTransactionStatusPayload,
@@ -10,7 +10,6 @@ import {
   APISubscriptionNewAmountPaymentPayload,
   APISubscriptionPaymentPayload,
   APISubscriptionTransactionPayload,
-  MakeStoreIdOptional,
   TransactionPayloadTypes,
 } from "./types/payload";
 import { validateMandatoryPayload } from "./validation/mandatory";
@@ -41,7 +40,13 @@ export type CorvusAPIPaths =
   | "next_sub_payment"
   | "status"
   | "check_pis_status";
-
+interface DefaultHTTPSRequestOptions {
+  hostname: string;
+  cert: Buffer;
+  passphrase?: string;
+  method: "POST";
+  key: Buffer;
+}
 export type CorvusAPIProps = {
   certificatePath: string;
   secretKey: string;
@@ -50,12 +55,19 @@ export type CorvusAPIProps = {
   storeId: number;
   version: string;
   endpoint: string;
+  makeHTTPSRequestOverride?: (
+    options: https.RequestOptions,
+    body: string | Buffer | Uint8Array
+  ) => Promise<Buffer>;
+  parseXMLFn?: <T extends string | Buffer>(data: T) => any;
 };
+
 export class CorvusAPI extends CorvusBase {
   private privateKey: Buffer;
   private passphrase?: string;
   private certificate: Buffer;
-
+  private makeHTTPSRequestOverride?: CorvusAPIProps["makeHTTPSRequestOverride"];
+  private parseXMLFn?: CorvusAPIProps["parseXMLFn"];
   /**
    * @param {string} certificatePath Path to the certificate file
    * @param {string} privateKeyPath Path to the private key for the certificate
@@ -64,6 +76,8 @@ export class CorvusAPI extends CorvusBase {
    * @param {number} storeId Store id issued by corvus
    * @param {string} endpoint Endpoint to send requests to. Test or Production.
    * @param {string} passphrase Passphrase used to encode/decode the private key.
+   * @param makeHTTPSRequestOverride Overwrite the default makeHTTPSRequest. Takes in the options with defaults and the body
+   * @param parseXMLFn Overwrite  the default XML parsing function. Takes in a single parameter the xml string
    * @returns {CorvusAPI} Instance of CorvusAPI.
    */
   constructor(options: CorvusAPIProps) {
@@ -76,45 +90,59 @@ export class CorvusAPI extends CorvusBase {
 
     this.secretKey = options.secretKey;
     this.endpoint = options.endpoint;
+    this.makeHTTPSRequestOverride = options.makeHTTPSRequestOverride;
+    this.parseXMLFn = options.parseXMLFn;
   }
 
   protected async makeHTTPSRequest(
     options: https.RequestOptions,
     body: string | Buffer | Uint8Array
   ): Promise<Buffer> {
-    const defaultOptions = {
+    const defaultOptions: DefaultHTTPSRequestOptions = {
       hostname: this.endpoint,
       cert: this.certificate,
       passphrase: this.passphrase,
       method: "POST",
       key: this.privateKey,
     };
-    const finalOptions = { ...defaultOptions, ...options };
+    const requestOptions = { ...defaultOptions, ...options };
+    if (this.makeHTTPSRequestOverride) {
+      return this.makeHTTPSRequestOverride(requestOptions, body);
+    }
+
     return new Promise(function (resolve, reject) {
-      var req = https.request(finalOptions, function (res) {
-        if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
-          return reject(new Error("statusCode=" + res.statusCode));
+      const request = https.request(requestOptions, function (response) {
+        if (
+          !response.statusCode ||
+          response.statusCode < 200 ||
+          response.statusCode >= 300
+        ) {
+          return reject(
+            new Error(
+              "Request rejected with status code: " +
+                response.statusCode +
+                response.statusMessage
+            )
+          );
         }
-        let resBody: Buffer[] = [];
-        res.on("data", function (chunk) {
-          resBody.push(chunk);
+        let responseBody: Buffer[] = [];
+        response.on("data", function (chunk) {
+          responseBody.push(chunk);
         });
-        res.on("end", function () {
-          try {
-            const fullRes = Buffer.concat(resBody);
-            resolve(fullRes);
-          } catch (e) {
-            reject(e);
-          }
+        response.on("end", function () {
+          resolve(Buffer.concat(responseBody));
+        });
+        response.on("error", function (err) {
+          reject(err);
         });
       });
-      req.on("error", function (err) {
+
+      request.on("error", function (err) {
         reject(err);
       });
-      if (body) {
-        req.write(body);
-      }
-      req.end();
+
+      if (body) request.write(body);
+      request.end();
     });
   }
 
@@ -142,6 +170,9 @@ export class CorvusAPI extends CorvusBase {
     return format(new Date(), "YmdHis");
   }
   public parseXML<T extends string | Buffer>(data: T) {
+    if (this.parseXMLFn) {
+      return this.parseXMLFn(data);
+    }
     const parser = new XMLParser();
     return parser.parse(data);
   }
