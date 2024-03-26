@@ -8,7 +8,7 @@ Collection of packages to interact with CorvusPay from javascript/typescript.
 `npm install @cyf0e/corvusjs-form`
 Initialize the form builder
 ```typescript
-const corvusForm = new CorvusFormService({ `
+const corvusForm = new CorvusFormService({ 
       endpoint: 'endpoint',  
      storeId: 1234,  
       version: "1.4",  
