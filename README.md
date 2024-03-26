@@ -17,7 +17,7 @@ const corvusForm = new CorvusFormService({ `
 ```
 You can then use it to create a payment:
 ```typescript
-corvusForm.form({
+corvusForm.mandatory({
         require_complete: false,
         amount: 5,
         cart: 'cart',
