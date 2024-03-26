@@ -27,7 +27,9 @@ corvusForm.form({
       })
 ```
 and `consume` the payment to sign it and clear the builder
-`const requestJson=corvusForm.consume() //the request is signed and cleared, we can now build another payment`
+```typescript
+const requestJson=corvusForm.consume() //the request is signed and cleared, we can now build another payment
+```
 To better understand building requests for the payment, please read the CorvusPay integration manual.
 
 
