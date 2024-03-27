@@ -1,13 +1,15 @@
-import { sha256 } from "js-sha256";
-import { generateSortedMessageFromOptions } from "./utils/utils";
+import {
+  computeSHA256Signature,
+  generateSortedMessageFromOptions,
+} from "./utils/utils";
 
 export class CorvusBase {
-  protected secretKey?: string;
+  protected secretKey: string;
   public endpoint: string;
   protected storeId: number;
   protected version: string = "1.4";
   constructor(options: {
-    secretKey?: string;
+    secretKey: string;
     endpoint: string;
     storeId: number;
     version: string;
@@ -18,12 +20,7 @@ export class CorvusBase {
     this.version = options.version;
   }
   protected signSHA256<T extends Record<string, string | number>>(options: T) {
-    if (!this.secretKey)
-      throw new Error("Secret key is required to sign transactions.");
-
-    const sortedMessage = generateSortedMessageFromOptions(options);
-    const signature = sha256.hmac(this.secretKey, sortedMessage);
-
+    const signature = computeSHA256Signature(options, this.secretKey);
     return { ...options, signature } as T & { signature: string };
   }
   protected encodeRequest<T extends Record<any, any>>(data: T) {
