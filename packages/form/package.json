@@ -1,11 +1,14 @@
 {
   "name": "@cyf0e/corvusjs-form",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "main": "./dist/index.js",
-  "type": "module",
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "corvuspay",
+    "corvus"
   ],
   "repository": {
     "type": "git",
@@ -16,7 +19,6 @@
     "test": "npx jest ./dist/api/test",
     "build": "rimraf ./dist && npx tsc"
   },
-  "keywords": [],
   "author": "cyf0e",
   "license": "MIT",
   "dependencies": {

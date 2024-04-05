@@ -1,6 +1,6 @@
 {
   "name": "@cyf0e/corvusjs-nodeapi",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "",
   "main": "./dist/index.js",
   "files": [
@@ -15,7 +15,10 @@
     "test": "npm run build && npx jest ./dist/test",
     "build": "rimraf ./dist && npx tsc"
   },
-  "keywords": [],
+  "keywords": [
+    "corvuspay",
+    "corvus"
+  ],
   "author": "cyf0e",
   "license": "MIT",
   "dependencies": {

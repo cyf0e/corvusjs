@@ -1,7 +1,4 @@
-import {
-  computeSHA256Signature,
-  generateSortedMessageFromOptions,
-} from "./utils/utils";
+import { computeSHA256Signature } from "./utils/utils";
 
 export class CorvusBase {
   protected secretKey: string;

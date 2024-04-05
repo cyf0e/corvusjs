@@ -1,7 +1,11 @@
 {
   "name": "@cyf0e/corvusjs-core",
-  "version": "1.0.5",
-  "description": "",
+  "version": "1.0.6",
+  "description": "Corvuspay js core utilities.",
+  "keywords": [
+    "corvuspay",
+    "corvus"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/cyf0e/corvusjs.git",

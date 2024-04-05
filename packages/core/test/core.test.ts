@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { CorvusBase } from "../CorvusBase";
-import { generateSortedMessageFromOptions } from "../utils/utils";
+import { CorvusBase } from "../CorvusBase.js";
+import { generateSortedMessageFromOptions } from "../utils/utils.js";
 class MockCorvusBase extends CorvusBase {
   constructor(options: {
     secretKey?: string;
@@ -81,6 +81,22 @@ describe("SIGN SHA256", () => {
     assert.deepStrictEqual(
       generateSortedMessageFromOptions({ c: 432, D: 99, a: "test", A: "big" }),
       "AbigD99atestc432"
+    );
+    //skip undefined values
+    assert.equal(
+      generateSortedMessageFromOptions({
+        amount: "25.74",
+        cardholder_country: undefined,
+      }),
+      "amount25.74"
+    );
+    //dont skip false booleans
+    assert.equal(
+      generateSortedMessageFromOptions({
+        amount: "25.74",
+        b: false,
+      }),
+      "amount25.74bfalse"
     );
   });
   it("appends store id and version", () => {

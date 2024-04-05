@@ -1,1 +1,1 @@
-export * from "./CorvusFormService";
+export { CorvusFormService } from "./CorvusFormService.js";
